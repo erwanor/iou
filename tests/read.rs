@@ -91,7 +91,7 @@ fn read_registered_buf() -> io::Result<()> {
         let mut sqe = sq.prepare_sqe().unwrap();
         sqe.prep_read(file.as_raw_fd(), buf.as_mut(), 0);
         sqe.set_user_data(0xDEADBEEF);
-        assert!(sqe.raw().opcode == uring_sys::IoRingOp::IORING_OP_READ_FIXED as u8);
+        assert!(sqe.raw().opcode == uring_sys::io_uring_op::IORING_OP_READ_FIXED as u8);
         sq.submit()?;
     }
 
@@ -126,7 +126,7 @@ fn read_registered_fd_and_buf() -> io::Result<()> {
         let mut sqe = sq.prepare_sqe().unwrap();
         sqe.prep_read(fd, buf.as_mut(), 0);
         sqe.set_user_data(0xDEADBEEF);
-        assert!(sqe.raw().opcode == uring_sys::IoRingOp::IORING_OP_READ_FIXED as u8);
+        assert!(sqe.raw().opcode == uring_sys::io_uring_op::IORING_OP_READ_FIXED as u8);
         assert!(sqe.flags().contains(iou::sqe::SubmissionFlags::FIXED_FILE));
         sq.submit()?;
     }

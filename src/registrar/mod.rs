@@ -291,7 +291,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Device or resource busy")]
+    #[should_panic(expected = "Resource busy")]
     fn double_register() {
         let ring = IoUring::new(1).unwrap();
         let _ = ring.registrar().register_files(&[1]).unwrap();

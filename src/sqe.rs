@@ -100,7 +100,7 @@ impl<'a> SQE<'a> {
     /// Set the [`Personality`] associated with this submission.
     #[inline]
     pub fn set_personality(&mut self, personality: Personality) {
-        self.sqe.buf_index.buf_index.personality = personality.id;
+        self.sqe.personality = personality.id;
     }
 
     /// Prepare a read on a file descriptor.
@@ -244,12 +244,16 @@ impl<'a> SQE<'a> {
 
     /// Prepare a recvmsg event on a file descriptor.
     pub unsafe fn prep_recvmsg(&mut self, fd: impl UringFd, msg: *mut libc::msghdr, flags: MsgFlags) {
+        // `libc::msghdr` and `uring_sys::msghdr` are identical.
+        let msg: *mut uring_sys::msghdr = msg.cast();
         uring_sys::io_uring_prep_recvmsg(self.sqe, fd.as_raw_fd(), msg, flags.bits() as _);
         fd.update_sqe(self);
     }
 
     /// Prepare a sendmsg event on a file descriptor.
     pub unsafe fn prep_sendmsg(&mut self, fd: impl UringFd, msg: *mut libc::msghdr, flags: MsgFlags) {
+        // `libc::msghdr` and `uring_sys::msghdr` are identical.
+        let msg = msg.cast_const().cast();
         uring_sys::io_uring_prep_sendmsg(self.sqe, fd.as_raw_fd(), msg, flags.bits() as _);
         fd.update_sqe(self);
     }
@@ -274,7 +278,7 @@ impl<'a> SQE<'a> {
         path: &CStr,
         flags: StatxFlags,
         mask: StatxMode,
-        buf: &mut libc::statx,
+        buf: &mut uring_sys::statx,
     ) {
         uring_sys::io_uring_prep_statx(self.sqe, dirfd.as_raw_fd(), path.as_ptr() as _,
                                        flags.bits() as _, mask.bits() as _,
@@ -343,7 +347,13 @@ impl<'a> SQE<'a> {
 
     #[inline]
     pub unsafe fn prep_poll_add(&mut self, fd: impl UringFd, poll_flags: PollFlags) {
-        uring_sys::io_uring_prep_poll_add(self.sqe, fd.as_raw_fd(), poll_flags.bits());
+        // `PollFlags::bits` gives us an `i16`, and we want those exact bits.
+        // The ugly cast should be the most sane option in this situation. Since
+        // we don't want it to turn into a foot-gun, we should also make sure we
+        // feed the type we actually expect into the cast.
+        let poll_flags: i16 = poll_flags.bits();
+        let poll_flags = (poll_flags as u16).into();
+        uring_sys::io_uring_prep_poll_add(self.sqe, fd.as_raw_fd(), poll_flags);
         fd.update_sqe(self);
     }
 

@@ -273,20 +273,20 @@ impl IoUring {
     /// Block until at least one [`CQE`] is completed. This will consume that CQE.
     pub fn wait_for_cqe(&mut self) -> io::Result<CQE> {
         let ring = NonNull::from(&self.ring);
-        self.inner_wait_for_cqes(1, ptr::null()).map(|cqe| CQE::new(ring, cqe))
+        self.inner_wait_for_cqes(1, ptr::null_mut()).map(|cqe| CQE::new(ring, cqe))
     }
 
     /// Block until a [`CQE`] is ready or timeout.
     pub fn wait_for_cqe_with_timeout(&mut self, duration: Duration)
         -> io::Result<CQE>
     {
-        let ts = uring_sys::__kernel_timespec {
+        let mut ts = uring_sys::__kernel_timespec {
             tv_sec: duration.as_secs() as _,
             tv_nsec: duration.subsec_nanos() as _
         };
 
         let ring = NonNull::from(&self.ring);
-        self.inner_wait_for_cqes(1, &ts).map(|cqe| CQE::new(ring, cqe))
+        self.inner_wait_for_cqes(1, &mut ts).map(|cqe| CQE::new(ring, cqe))
     }
 
     /// Returns an iterator of [`CQE`]s which are ready from the kernel.
@@ -305,10 +305,10 @@ impl IoUring {
 
     /// Wait until `count` [`CQE`]s are ready, without submitting any events.
     pub fn wait_for_cqes(&mut self, count: u32) -> io::Result<()> {
-        self.inner_wait_for_cqes(count as _, ptr::null()).map(|_| ())
+        self.inner_wait_for_cqes(count as _, ptr::null_mut()).map(|_| ())
     }
 
-    fn inner_wait_for_cqes(&mut self, count: u32, ts: *const uring_sys::__kernel_timespec)
+    fn inner_wait_for_cqes(&mut self, count: u32, ts: *mut uring_sys::__kernel_timespec)
         -> io::Result<&mut uring_sys::io_uring_cqe>
     {
         unsafe {
@@ -319,7 +319,7 @@ impl IoUring {
                 cqe.as_mut_ptr(),
                 count,
                 ts,
-                ptr::null(),
+                ptr::null_mut(),
             ))?;
 
             Ok(&mut *cqe.assume_init())

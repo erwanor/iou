@@ -22,7 +22,7 @@ impl Probe {
         }
     }
 
-    pub fn supports(&self, op: uring_sys::IoRingOp) -> bool {
+    pub fn supports(&self, op: uring_sys::io_uring_op) -> bool {
         unsafe { uring_sys::io_uring_opcode_supported(self.probe.as_ptr(), op as _) != 0 }
     }
 }

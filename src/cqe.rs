@@ -159,8 +159,8 @@ impl<'a> CQEsBlocking<'a> {
                 self.ring.as_ptr(),
                 cqe.as_mut_ptr(),
                 self.wait_for as _,
-                ptr::null(),
-                ptr::null(),
+                ptr::null_mut(),
+                ptr::null_mut(),
             ))?;
 
             Ok(&mut *cqe.assume_init())

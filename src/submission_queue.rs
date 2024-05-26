@@ -113,7 +113,7 @@ impl<'ring> SubmissionQueue<'ring> {
                 sqe.clear();
                 unsafe {
                     sqe.prep_timeout(&ts, 0, crate::sqe::TimeoutFlags::empty());
-                    sqe.set_user_data(uring_sys::LIBURING_UDATA_TIMEOUT);
+                    sqe.set_user_data(libc::__u64::max_value());
                     return resultify(uring_sys::io_uring_submit_and_wait(self.ring.as_ptr(), wait_for as _))
                 }
             }
