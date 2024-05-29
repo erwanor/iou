@@ -123,13 +123,20 @@ bitflags::bitflags! {
 bitflags::bitflags! {
     /// Advanced features that can be enabled when setting up an [`IoUring`] instance.
     pub struct SetupFeatures: u32 {
-        const SINGLE_MMAP       = 1 << 0;
-        const NODROP            = 1 << 1;
-        const SUBMIT_STABLE     = 1 << 2;
-        const RW_CUR_POS        = 1 << 3;
-        const CUR_PERSONALITY   = 1 << 4;
-        const FAST_POLL         = 1 << 5;
-        const POLL_32BITS       = 1 << 6;
+        const SINGLE_MMAP       = uring_sys::IORING_FEAT_SINGLE_MMAP;
+        const NODROP            = uring_sys::IORING_FEAT_NODROP;
+        const SUBMIT_STABLE     = uring_sys::IORING_FEAT_SUBMIT_STABLE;
+        const RW_CUR_POS        = uring_sys::IORING_FEAT_RW_CUR_POS;
+        const CUR_PERSONALITY   = uring_sys::IORING_FEAT_CUR_PERSONALITY;
+        const FAST_POLL         = uring_sys::IORING_FEAT_FAST_POLL;
+        const POLL_32BITS       = uring_sys::IORING_FEAT_POLL_32BITS;
+        const SQPOLL_NONFIXED   = uring_sys::IORING_FEAT_SQPOLL_NONFIXED;
+        const EXT_ARG           = uring_sys::IORING_FEAT_EXT_ARG;
+        const NATIVE_WORKERS    = uring_sys::IORING_FEAT_NATIVE_WORKERS;
+        const RSRC_TAGS         = uring_sys::IORING_FEAT_RSRC_TAGS;
+        const CQE_SKIP          = uring_sys::IORING_FEAT_CQE_SKIP;
+        const LINKED_FILE       = uring_sys::IORING_FEAT_LINKED_FILE;
+        const REG_REG_RING      = uring_sys::IORING_FEAT_REG_REG_RING;
     }
 }
 
