@@ -97,16 +97,26 @@ bitflags::bitflags! {
     /// ```
     pub struct SetupFlags: u32 {
         /// Poll the IO context instead of defaulting to interrupts.
-        const IOPOLL    = 1 << 0;   /* io_context is polled */
+        const IOPOLL                = uring_sys::IORING_SETUP_IOPOLL;   /* io_context is polled */
         /// Assign a kernel thread to poll the submission queue. Requires elevated privileges to set.
-        const SQPOLL    = 1 << 1;   /* SQ poll thread */
+        const SQPOLL                = uring_sys::IORING_SETUP_SQPOLL;   /* SQ poll thread */
         /// Force the kernel thread created with `SQPOLL` to be bound to the CPU used by the
         /// `SubmissionQueue`. Requires `SQPOLL` set.
-        const SQ_AFF    = 1 << 2;   /* sq_thread_cpu is valid */
+        const SQ_AFF                = uring_sys::IORING_SETUP_SQ_AFF;   /* sq_thread_cpu is valid */
 
-        const CQSIZE    = 1 << 3;
-        const CLAMP     = 1 << 4;
-        const ATTACH_WQ = 1 << 5;
+        const CQSIZE                = uring_sys::IORING_SETUP_CQSIZE;
+        const CLAMP                 = uring_sys::IORING_SETUP_CLAMP;
+        const ATTACH_WQ             = uring_sys::IORING_SETUP_ATTACH_WQ;
+        const R_DISABLED            = uring_sys::IORING_SETUP_R_DISABLED;
+        const SUBMIT_ALL            = uring_sys::IORING_SETUP_SUBMIT_ALL;
+        const COOP_TASKRUN          = uring_sys::IORING_SETUP_COOP_TASKRUN;
+        const TASKRUN_FLAG          = uring_sys::IORING_SETUP_TASKRUN_FLAG;
+        const SQE128                = uring_sys::IORING_SETUP_SQE128;
+        const CQE32                 = uring_sys::IORING_SETUP_CQE32;
+        const SINGLE_ISSUER         = uring_sys::IORING_SETUP_SINGLE_ISSUER;
+        const DEFER_TASKRUN         = uring_sys::IORING_SETUP_DEFER_TASKRUN;
+        const NO_MMAP               = uring_sys::IORING_SETUP_NO_MMAP;
+        const REGISTERED_FD_ONLY    = uring_sys::IORING_SETUP_REGISTERED_FD_ONLY;
     }
 }
 
